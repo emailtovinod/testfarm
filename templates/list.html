@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+   <body>
+   
+      <table border = 1>
+         <thead>
+            <td>TICKET_ID</td>
+            <td>NAME></td>
+            <td>DESCRIPTION</td>
+         </thead>
+         
+         {% for row in rows %}
+            <tr>
+               <td>{{row["TICKET_ID"]}}</td>
+               <td>{{row["NAME"]}}</td>
+               <td> {{ row["DESCRIPTION"]}}</td>
+               <td> {{ row["CATEGORY"]}}</td>
+            </tr>
+         {% endfor %}
+      </table>
+      
+      <a href = "/">Go back to home page</a>
+      
+   </body>
+</html>

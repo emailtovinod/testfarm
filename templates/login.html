@@ -1,0 +1,35 @@
+<link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+<link href="static/style2.css" rel="stylesheet" media="screen">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<!------ Include the above in your HEAD tag ---------->
+    <div class="container">
+    <h1 class="welcome text-center">Welcome to <br> AgentTed</h1>
+        <div class="card card-container">
+        <h2 class='login_title text-center'>Login</h2>
+        <hr>
+
+            <form action="" method="post" class="form-signin">
+                <span id="reauth-email" class="reauth-email"></span>
+                <p class="input_title">Email</p>
+                <input type="text" placeholder="Username" name="username" value="{{
+          request.form.username }}" >
+                <p class="input_title">Password</p>
+                <input type="password" placeholder="Password" name="password" value="{{
+          request.form.password }}">
+                <div id="remember" class="checkbox">
+                    <label>
+                        
+                    </label>
+                </div>
+                <button class="btn btn-lg btn-primary" type="submit">Login</button>
+            </form><!-- /form -->
+            <form action="/dashboard" method="post" class="form-signin">
+           <button class="btn btn-lg btn-primary" type="submit"  />Dashboard</button>
+        </form>
+      {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}
+      {% endif %}
+        </div><!-- /card-container -->
+    </div><!-- /container -->

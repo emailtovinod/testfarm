@@ -1,1 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <style>
 
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: #1d2124; 
+}
+</style>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+  </head>
+  <body style="background-color:#a9c7d7">
+  <div class="chatwindow bg-gradient-info" style="margin-top:40px;background-color:white">
+    <h4 id="chattitle">Agent Ted</h4>
+    <h5 style="padding-left:120px;padding-top:5px;">24 X 7 Chat Assistant</h5>
+    <div>
+      <div id="chatbox">
+        <p class="botText"><span>Hi! I'm Agent Ted.</span></p>
+      </div>
+      <div id="userInput">
+        <input id="textInput" type="text" name="msg" placeholder="Message" class="font-weight-normal" >
+        <input id="buttonInput" class="btn btn-primary" type="submit" value="Send" >
+      </div>
+      <script>
+        function getBotResponse() {
+          var rawText = $("#textInput").val();
+          var userHtml = '<p class="userText"><span>' + rawText + '</span></p>';
+          $("#textInput").val("");
+          $("#chatbox").append(userHtml);
+          document.getElementById('userInput').scrollIntoView({block: 'start', behavior: 'smooth'});
+          $.get("/get", { msg: rawText }).done(function(data) {
+            var botHtml = '<p class="botText font-weight-normal"><span>' + data + '</span></p>';
+            $("#chatbox").append(botHtml);
+            document.getElementById('userInput').scrollIntoView({block: 'start', behavior: 'smooth'});
+          });
+        }
+        $("#textInput").keypress(function(e) {
+            if(e.which == 13) {
+                getBotResponse();
+            }
+        });
+        $("#buttonInput").click(function() {
+          getBotResponse();
+        })
+      </script>
+    </div>
+    </div>
+  </body>
+</html>
