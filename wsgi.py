@@ -87,6 +87,7 @@ def get_bot_response():
     
     if ticket_type=='L1':
         status = ''
+	status_updt = 'RUNNING'
         """  Extracting Entities from return obj of dialogflow """ 
         print(str(obj['result']['parameters']['Vmname']))
         Vmname=str(obj['result']['parameters']['Vmname'])
