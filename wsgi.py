@@ -384,8 +384,11 @@ def dashboard():
 #           sns.distplot(dataframe['CATEGORY'].value_counts())
       #           plt.bar(dataframe['USER'],dataframe['CATEGORY'])
       fig = plt.figure()    
-      dataframe.groupby('CATEGORY').size().plot(kind='bar')
+      #dataframe.groupby('CATEGORY').size().plot(kind='bar')
       #path='media/graph.jpg'
+      plt.bar(dataframe['CATEGORY'],dataframe['CATEGORY'].value_counts())
+      plt.xlabel("Ticket Category")
+      plt.ylabel("Number of Tickets") 
       path='static/media/graph.png'
       print(path)
       fig.savefig(path)
