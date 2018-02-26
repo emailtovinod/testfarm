@@ -9,7 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-application = Flask(__name__, template_folder="templates",static_url_path="/static")
+application = Flask(__name__, template_folder="templates")
 #application.config['DEBUG'] = True
 
 glb_username = ''
