@@ -7,9 +7,8 @@ from sqlite3 import Error
 import http.client, urllib.request, urllib.parse, urllib.error
 import pandas as pd
 import matplotlib.pyplot as plt
-import os
 
-application = Flask(__name__, template_folder="templates")
+application = Flask(__name__, template_folder="templates",static_url_path="/static")
 #application.config['DEBUG'] = True
 
 glb_username = ''
@@ -87,7 +86,7 @@ def get_bot_response():
     
     if ticket_type=='L1':
         status = ''
-	status_updt = 'RUNNING'
+        status_updt = 'RUNNING'
         """  Extracting Entities from return obj of dialogflow """ 
         print(str(obj['result']['parameters']['Vmname']))
         Vmname=str(obj['result']['parameters']['Vmname'])
@@ -168,7 +167,7 @@ def get_bot_response():
                 con.close()
                 reply = "Ticket: " + str(max_id) + " " + str(reply)
             
-                reply = action + " of " + Vmname + " is Sucess. " + "ticket_id: " + str(max_id) 
+                reply = Vmname + " is sucessfully " + action + "ed. ticket_id: " + str(max_id) 
                 obj = ''
                 print('L1 ticket lodged')
 
@@ -188,7 +187,7 @@ def get_bot_response():
             
             if (Env.lower() == 'prod' or Env.lower() == 'production'):
             
-                reply = 'I am afraid that new instance can not be provisioned in production environment'
+                reply = 'Sorry. As per policy I can not provision you a new instance in production environment.'
                 obj = ''
                 print(reply)
             
@@ -386,12 +385,13 @@ def dashboard():
 #           sns.distplot(dataframe['CATEGORY'].value_counts())
       #           plt.bar(dataframe['USER'],dataframe['CATEGORY'])
       fig = plt.figure()    
-      #dataframe.groupby('CATEGORY').size().plot(kind='bar')
-      #path='media/graph.jpg'
-      plt.bar(dataframe['CATEGORY'],dataframe['CATEGORY'].value_counts())
-      plt.xlabel("Ticket Category")
-      plt.ylabel("Number of Tickets") 
+      dataframe.groupby('CATEGORY').size().plot(kind='bar')
       path='static/media/graph.png'
+      
+#      plt.bar(dataframe['CATEGORY'],dataframe['CATEGORY'].value_counts())
+#      plt.xlabel("Ticket Category")
+#      plt.ylabel("Number of Tickets") 
+#      path='static/media/graph.png'
       print(path)
       fig.savefig(path)
 #           image_to_render = base64.b64encode(path).decode('ascii')
