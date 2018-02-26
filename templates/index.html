@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
+  <script>
+    window.setInterval(function() {
+    var elem = document.getElementById('chatbox');
+    elem.scrollTop = elem.scrollHeight;
+      }, 1)
+</script>
   <style>
-
 ::-webkit-scrollbar {
     width: 10px;
 }
