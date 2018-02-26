@@ -5,3 +5,4 @@ flask
 apiai
 matplotlib
 pandas
+requests
