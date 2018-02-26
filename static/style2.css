@@ -1,12 +1,14 @@
 
 body, html {
-    height: 100%;
-    background-repeat: no-repeat;
-background: rgb(185,210,224); /* Old browsers */
+height: 100%;
+background-repeat: no-repeat;
+background: url("/static/media/loginbackground.jpg");
+background: rgb(101, 247, 3); /* Old browsers */
 background: -moz-radial-gradient(center, ellipse cover,  rgba(185,210,224,1) 0%, rgba(187,214,228,1) 0%, rgba(186,211,225,1) 15%, rgba(186,211,225,1) 38%, rgba(169,199,215,1) 68%, rgba(169,199,215,1) 68%, rgba(169,199,215,1) 82%, rgba(158,191,208,1) 100%); /* FF3.6-15 */
 background: -webkit-radial-gradient(center, ellipse cover,  rgba(185,210,224,1) 0%,rgba(187,214,228,1) 0%,rgba(186,211,225,1) 15%,rgba(186,211,225,1) 38%,rgba(169,199,215,1) 68%,rgba(169,199,215,1) 68%,rgba(169,199,215,1) 82%,rgba(158,191,208,1) 100%); /* Chrome10-25,Safari5.1-6 */
 background: radial-gradient(ellipse at center,  rgba(185,210,224,1) 0%,rgba(187,214,228,1) 0%,rgba(186,211,225,1) 15%,rgba(186,211,225,1) 38%,rgba(169,199,215,1) 68%,rgba(169,199,215,1) 68%,rgba(169,199,215,1) 82%,rgba(158,191,208,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b9d2e0', endColorstr='#9ebfd0',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+filter: blur(10px)
 
 }
 
@@ -15,9 +17,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b9d2e0', end
     border:3px solid #F4F4F4;
     padding-left: 15px;
     margin-bottom:25px;
+    background:rgba(90, 94, 97, 0.6);
     }
 .input_title{
-    color:rgba(164, 164, 164, 0.9);
+    color:rgba(22, 21, 21, 0.9);
     padding-left:3px;
         margin-bottom: 2px;
     }
@@ -40,25 +43,25 @@ hr{
     font-family: "myriad-pro",sans-serif;
     font-style: normal;
     font-weight: 100;
-    color:rgba(164, 164, 164, 0.44);
+    color:rgba(250, 248, 248, 0.897);
 }
 
 .card-container.card {
     max-width: 350px;
-
+	background:rgba(52, 53, 53, 0.0);
 }
 
 .btn {
-    font-weight: 700;
+    font-weight: 100;
     height: 36px;
     -moz-user-select: none;
     -webkit-user-select: none;
     user-select: none;
     cursor: default;
     border-radius:0;
+    border-radius:25px;
     background:#43A6EB;
-    height: 55px;
-    margin-bottom:10px;
+    margin-bottom:8px;
 }
 
 /*
@@ -73,7 +76,7 @@ hr{
     /* shadows and rounded borders */
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
-    border-radius: 2px;
+    border-radius: 8px;
     -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
     -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
     box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
@@ -93,7 +96,7 @@ hr{
  * Form styles
  */
 .profile-name-card {
-    font-size: 16px;
+    font-size: 12px;
     font-weight: bold;
     text-align: center;
     margin: 10px 0 0;
@@ -103,10 +106,12 @@ hr{
 .reauth-email {
     display: block;
     color: #404040;
-    line-height: 2;
-    margin-bottom: 10px;
-    font-size: 14px;
+    line-height: 3;
+    margin-bottom: 8px;
+    font-size: 12px;
     text-align: center;
+    border-radius:25px;
+    padding-left:10px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -118,8 +123,11 @@ hr{
 .form-signin #inputEmail,
 .form-signin #inputPassword {
     direction: ltr;
-    height: 44px;
-    font-size: 16px;
+    height: 36px;
+    font-size: 12px;
+    
+    border-radius:25px;
+    padding-left:10px;
 }
 
 .form-signin input[type=email],
@@ -128,7 +136,9 @@ hr{
 .form-signin button {
     width: 100%;
     display: block;
-
+    height: 36px;
+    border-radius:25px;
+    padding-left:10px;
     z-index: 1;
     position: relative;
     -moz-box-sizing: border-box;
@@ -139,6 +149,9 @@ hr{
 .form-signin .form-control:focus {
     border-color: rgb(104, 145, 162);
     outline: 0;
+    height: 36px;
+    border-radius:25px;
+    padding-left:10px;
     -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(104, 145, 162);
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgb(104, 145, 162);
 }
@@ -148,8 +161,8 @@ hr{
     background-color: rgb(104, 145, 162);
     /* background-color: linear-gradient(rgb(104, 145, 162), rgb(12, 97, 33));*/
     padding: 0px;
-    font-weight: 700;
-    font-size: 14px;
+    font-weight: 100;
+    font-size: 12px;
     height: 36px;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
