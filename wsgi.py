@@ -117,7 +117,7 @@ def get_bot_response():
             action = action.lower()
             
             print(action)
-            stop_lst= ['stop', 'terminate' , 'shutdown' , 'sut down']   
+            stop_lst= ['stop', 'terminate' , 'shutdown' , 'shut down']   
             start_lst = ['start', 'run']
 
            
@@ -135,11 +135,11 @@ def get_bot_response():
             
             elif ((action in  stop_lst ) and (status == 'terminated')):
                 
-                reply = Vmname + ' is already in stopped'
+                reply = Vmname + ' is already stopped'
                 print(reply)
                 obj = ''
             else:
-                
+                status_updt = 'RUNNING'
                 if (action in  start_lst ) : 
                     status_updt = 'RUNNING'
                 
