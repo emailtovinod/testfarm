@@ -13,42 +13,68 @@
     <link rel="stylesheet" type="text/css" href="/static/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" href="static/loginstyle.css">
+
   </head>
-  <body style="background-color:#a9c7d7">
-  <div class="chatwindow bg-gradient-info" style="margin-top:40px;background-color:white">
-    <h4 id="chattitle">Agent Ted</h4>
-    <h5 style="padding-left:120px;padding-top:5px;">24 X 7 Chat Assistant</h5>
-    <div>
-      <div id="chatbox">
-        <p class="botText"><span>Hi! I'm Agent Ted.</span></p>
-      </div>
-      <div id="userInput">
-        <input id="textInput" type="text" name="msg" placeholder="Message" class="font-weight-normal" >
-        <input id="buttonInput" class="btn btn-primary" type="submit" value="Send" >
-      </div>
-      <script>
-        function getBotResponse() {
-          var rawText = $("#textInput").val();
-          var userHtml = '<p class="userText"><span>' + rawText + '</span></p>';
-          $("#textInput").val("");
-          $("#chatbox").append(userHtml);
-          document.getElementById('userInput').scrollIntoView({block: 'start', behavior: 'smooth'});
-          $.get("/get", { msg: rawText }).done(function(data) {
-            var botHtml = '<p class="botText font-weight-normal"><span>' + data + '</span></p>';
-            $("#chatbox").append(botHtml);
-            document.getElementById('userInput').scrollIntoView({block: 'start', behavior: 'smooth'});
-          });
-        }
-        $("#textInput").keypress(function(e) {
-            if(e.which == 13) {
-                getBotResponse();
-            }
-        });
-        $("#buttonInput").click(function() {
-          getBotResponse();
-        })
-      </script>
+  <body style="background-image: url(static/media/login1.png); filter:grayscale(100%)">
+
+  <div>
+  
+    <div id="a" class="chatpagetext" style="width: 50%px; height: 100%; border: 0px solid blue; float: left; align:center">
+      <br><Br><br><br><br><br><br><br>
+      <Br>
+      <br>
+      <br>
+      <br>
+        <p style="padding-left:20px"> <font color=white style="font-size:30px">Azure Infrastructure Support</font></p>
     </div>
-    </div>
+    <div id="b" class="chatpagewin" style="width: 50%; height: 100%; border: 0px solid red; float: right;">
+
+        <div class="chatwindow bg-gradient-info" style="margin-top:5px;margin-right:5px;margin-left:5px;margin-bottom:5px;background-color:white;float:right;min-height:660px;">
+          <table><tr>
+          <td>
+            <img style="padding-left:5px;padding-top:5px;" src="/static/media/robo2.png" width="100" height=auto >
+          </td>
+          <td>
+          <h5 id="chattitle" style="padding-left:5px;padding-top:5px;"><font face="Arial" color="blue">Agent</font><b><font face="verdana" color="Orange">TED</font></b></h5>
+          <h7 style="padding-left:2px;padding-top:5px;"><i>Virtual Assistant for Azure Support Services</i></h7>
+          </td>  
+          </tr></table>
+          <div >
+                <div id="chatbox" style="height:500px">
+                  <p class="botText"><span>Hi! I'm AgentTED.</span></p>
+                </div>
+               <br>
+                <div id="userInput">
+                  <input id="textInput" type="text" name="msg" placeholder="Message" class="font-weight-normal" >
+                  <input id="buttonInput" class="btn btn-primary" type="submit" value="Send" >
+                </div>
+                <script>
+                  function getBotResponse() {
+                    var rawText = $("#textInput").val();
+                    var userHtml = '<p class="userText"><span>' + rawText + '</span></p>';
+                    $("#textInput").val("");
+                    $("#chatbox").append(userHtml);
+                    document.getElementById('userInput').scrollIntoView({block: 'start', behavior: 'smooth'});
+                    $.get("/get", { msg: rawText }).done(function(data) {
+                      var botHtml = '<p class="botText font-weight-normal"><span>' + data + '</span></p>';
+                      $("#chatbox").append(botHtml);
+                      document.getElementById('userInput').scrollIntoView({block: 'start', behavior: 'smooth'});
+                    });
+                  }
+                  $("#textInput").keypress(function(e) {
+                      if(e.which == 13) {
+                          getBotResponse();
+                      }
+                  });
+                  $("#buttonInput").click(function() {
+                    getBotResponse();
+                  })
+                </script>
+          </div>
+        </div>
+
+        </div>
+  </div>
   </body>
 </html>
