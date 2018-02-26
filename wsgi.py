@@ -309,6 +309,7 @@ def table_creation():
     conn.execute("INSERT INTO TICKETS (NAME, QUERY,CATEGORY) VALUES (?,?,?)",(name, query,tkt_type) )
     conn.commit()
     conn.execute('CREATE TABLE IF NOT EXISTS VM_INSTANCE (USER_NAME CHAR(100), SUBSCRIPTION_ID CHAR(100), VM_NAME CHAR(100), VM_STATUS CHAR(100))')
+    """
     cur = conn.cursor()
     cur.execute("select * from TICKETS")
     print('TICKETS')
@@ -319,9 +320,9 @@ def table_creation():
     print('VM_INSTANCE')
     names_instances = list(map(lambda x: x[0], cur.description))
     print(names_instances)
-    
+    """
     conn.close()
-    print("Table created")
+    print("Tables created")
 
 def create_connection():
 
