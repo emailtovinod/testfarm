@@ -1,35 +1,85 @@
-<link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="static/style2.css" rel="stylesheet" media="screen">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <title>AgentTED - Login Form</title>
+
+    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="static/style2.css" rel="stylesheet" media="screen">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel='stylesheet prefetch' href='https://fonts.googleapis.com/css?family=Open+Sans:600'>
+
+    <link rel="stylesheet" href="static/loginstyle.css">
+
+</head>
+
+<body>
 
 <!------ Include the above in your HEAD tag ---------->
-    <div class="container">
-    <h1 class="welcome text-center">Welcome to <br> AgentTed</h1>
-        <div class="card card-container">
-        <h2 class='login_title text-center'>Login</h2>
-        <hr>
 
-            <form action="" method="post" class="form-signin">
-                <span id="reauth-email" class="reauth-email"></span>
-                <p class="input_title">Email</p>
-                <input type="text" placeholder="Username" name="username" value="{{
-          request.form.username }}" >
-                <p class="input_title">Password</p>
-                <input type="password" placeholder="Password" name="password" value="{{
-          request.form.password }}">
-                <div id="remember" class="checkbox">
-                    <label>
-                        
-                    </label>
-                </div>
-                <button class="btn btn-lg btn-primary" type="submit">Login</button>
-            </form><!-- /form -->
-            <form action="/dashboard" method="post" class="form-signin">
-           <button class="btn btn-lg btn-primary" type="submit"  />Dashboard</button>
-        </form>
-      {% if error %}
-        <p class="error"><strong>Error:</strong> {{ error }}
-      {% endif %}
-        </div><!-- /card-container -->
-    </div><!-- /container -->
+<div>
+
+    <div id="a" class="login-label" style="width: 50%px; height: 100%; border: 0px solid blue; float: left;">
+        <font color="Blue" style="font-size:50px">Agent</font>
+        <b>
+            <font color="orange" style="font-size:60px">TED</font>
+        </b>
+        <br>
+        <font color="white" style="font-size:25px">
+            <i>Intelligent Assistant. Anytime. Anywhere.</i>
+        </font>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <img src="static/media/azure.png" height=100 width=auto>
+        <br>
+        <font color="white" style="font-size:25px">
+            <i>For Azure Support Services</i>
+        </font>
+    </div>
+    <div id="b" class="login-wrap" style="width: 50%; height: 100%; border: 0px solid red; float: right;">
+
+        <div class="login-html">
+            <br>
+            <div class="container" >
+                    <div class="card card-container">
+                        <br>
+                    <h6 class='login_title text-center'>User Login</h6>
+                       <form action="" method="post" class="form-signin">
+                            <span id="reauth-email" class="reauth-email"></span>
+                            <p class="input_title"><br></p>
+                            <input class="input" type="text" placeholder="Username" name="username" value="{{
+                    request.form.username }}" >
+                            <p class="input_title"><br></p>
+                            <input  class="input" type="password" placeholder="Password" name="password" value="{{
+                    request.form.password }}">
+                            <div id="remember" class="checkbox">
+                                <label>
+                                    
+                                </label>
+                            </div>
+                            <br>
+                            <button class="btn btn-lg btn-primary" type="submit" style="font-size:12px">Login for Azure Support</button>
+                            <br>
+                        </form><!-- /form -->
+                        <form action="/dashboard" method="post" class="form-signin">
+                    <button class="btn btn-lg btn-primary" type="submit"  style="font-size:12px">Login for Dashboard View</button>
+                    </form>
+                {% if error %}
+                    <p class="error"><strong>Error:</strong> {{ error }}
+                {% endif %}
+                    </div><!-- /card-container -->
+                </div><!-- /container -->
+            </div>
+        </div>
+    </div>
