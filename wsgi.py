@@ -149,7 +149,7 @@ def get_bot_response():
 	        
             elif (((action in  start_lst) or (action in  stop_lst) or (action in  terminate_list))and (status == 'terminated')):
                 
-                reply = Vmname + ' is already terminated. No further operations can be performed'
+                reply = Vmname + ' is already terminated. No further operations can be performed.'
                 print(reply)
                 obj = ''
             else:
