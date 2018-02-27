@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+"""
+Created on Tue Feb 27 12:41:20 2018
+
+@author: anumula_anudeep
+"""
+
+# -*- coding: utf-8 -*-
 
 from flask import Flask, render_template, request
 import json,apiai, requests
@@ -117,8 +124,9 @@ def get_bot_response():
             action = action.lower()
             
             print(action)
-            stop_lst= ['stop', 'terminate' , 'shutdown' , 'shut down']   
+            stop_lst= ['stop' , 'shutdown' , 'shut down']   
             start_lst = ['start', 'run']
+            terminate_list = ['terminate']
 
            
             if (status == ''):
@@ -133,9 +141,15 @@ def get_bot_response():
                 print(reply)
                 obj = ''
             
-            elif ((action in  stop_lst ) and (status == 'terminated')):
+            elif ((action in  stop_lst ) and (status == 'stopped')):
                 
                 reply = Vmname + ' is already stopped'
+                print(reply)
+                obj = ''
+	        
+            elif (((action in  start_lst) or (action in  stop_lst) or (action in  terminate_list))and (status == 'terminated')):
+                
+                reply = Vmname + ' is already terminated. No further operations can be performed'
                 print(reply)
                 obj = ''
             else:
@@ -144,6 +158,9 @@ def get_bot_response():
                     status_updt = 'RUNNING'
                 
                 if (action in  stop_lst ) : 
+                    status_updt = 'STOPPED'
+                
+                if (action in  terminate_list ) : 
                     status_updt = 'TERMINATED'
                     
                 update_str = "update VM_INSTANCE set VM_STATUS = '" + status_updt + "' where  VM_NAME = '" + Vmname + "'"  
