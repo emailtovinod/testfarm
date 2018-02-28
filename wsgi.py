@@ -42,6 +42,7 @@ def login():
 def get_bot_response():
     global glb_username
     admin_email= 'admin@example.com'
+    priority_lst = {'low': 1 ,'medium': 2 , 'high':3,  'urgent': 4}
     """ Fetching user dialog from UI """
     userText = request.args.get('msg')
     
@@ -63,11 +64,64 @@ def get_bot_response():
     
     reply = obj['result']['fulfillment']['speech']
     ticket_type=str(obj['result']['action'])
-
-    print(ticket_type)
+    action = ticket_type
+    print(action)
     print(str(obj['result']['parameters']))
     
-    if ticket_type=='L0':
+    if action=='show':
+        
+        print("In show ticket")
+        ticket_id=str(obj['result']['parameters']['ticketid'])
+        display =str(obj['result']['parameters']['display'])
+        print(ticket_id)
+        print(display)
+        
+        if (ticket_id != '' and display != ''):
+            
+            res = show_ticket(ticket_id)
+            if res.status_code == 200:
+                print ("Request processed successfully, the response is given below")
+                L1 = "please find below the ticket details"
+                L2 = " <br /> <b>Ticket id</b>: " + str(res.json()['id'])
+                L3 = " <br /> <b>Requestor email</b>: " + res.json()['requester']['email']
+                L4 = " <br /> <b>Ticket type</b>: " + res.json()['type']
+                L5 = " <br /> <b>ticket id</b>: " + res.json()['description_text']
+                L6 = " <br /> <b>priority</b>: " + str(res.json()['priority'])
+
+                reply = L1 + L2 + L3 + L4 + L5 + L6
+
+            else:
+                    reply = "Failed to fetch ticket details, please check with a valid ticket id"
+
+        obj = ''
+            
+    
+
+    if action=='update':
+        
+        print("In update ticket")
+        ticket_id=str(obj['result']['parameters']['ticketid'])
+        tkt_priority=str(obj['result']['parameters']['priority'][0])
+       
+
+        update=str(obj['result']['parameters']['update'])
+        
+        reply = obj['result']['fulfillment']['speech']
+
+        print(ticket_id)
+        
+        if (ticket_id != '' and tkt_priority != '' and update != ''):
+            
+            tkt_priority = priority_lst[tkt_priority.lower()]
+            res = update_ticket(ticket_id, tkt_priority)
+
+            if res.status_code != 200:
+                reply = "Failed to update ticket, please check with a valid ticket id and priority"
+
+        obj = ''
+            
+    
+    if action=='L0':
         
         """ call to QNA forgetting replies from FAQ pages """
         query = str(obj['result']['resolvedQuery'])
@@ -93,7 +147,7 @@ def get_bot_response():
         obj = ''
         print('L0 ticket lodged')
     
-    if ticket_type=='L1':
+    if action=='L1':
         status = ''
         status_updt = 'RUNNING'
         """  Extracting Entities from return obj of dialogflow """ 
@@ -195,7 +249,7 @@ def get_bot_response():
                 obj = ''
                 print('L1 ticket lodged')
 
-    if ticket_type=='L11':
+    if action=='L11':
         
         """  Extracting Entities from return obj of dialogflow """
         ticket_type = 'L1'
@@ -267,18 +321,20 @@ def get_bot_response():
                 obj = ''
                 print('L11 ticket lodged')
                        
-    if ticket_type=='L2':
+    if action=='L2':
         
         """   Extracting Entities from return obj of dialogflow """ 
         Vmname=str(obj['result']['parameters']['Vmname'])
         user=str(obj['result']['parameters']['user'])
         description=str(obj['result']['parameters']['description'])
+        tkt_priority = str(obj['result']['parameters']['priority'])
+        
+        
         query =  Vmname + ' ' + description
-        tkt_priority = 2
         tkt_status = 2
        
         """  Validating if all the required entities for L2 are extracted from user dialogs """ 
-        if (Vmname != '' and user != '' and description != ''):
+        if (Vmname != '' and user != '' and description != '' and tkt_priority != ''):
            
             """   Establishing connection with Agentted.db """ 
             con = create_connection()
@@ -298,13 +354,13 @@ def get_bot_response():
                 print(max_id)
            
             con.close()
+            tkt_priority = priority_lst[tkt_priority.lower()]
             ticket_id = log_ticket(ticket_type, query, admin_email, tkt_priority, tkt_status)
             reply = "Ticket: " + str(ticket_id) + " " +str(reply)
             obj = ''
             
     return str(reply)
-
-
+    
     
 @application.route('/foo', methods=['POST','GET'])
 def tickets():
@@ -437,6 +493,30 @@ def log_ticket(ticket_type, query, admin_email, priority, status):
 	  print ("x-request-id : " + r.headers['x-request-id'])
 	  print ("Status Code : " + str(r.status_code))
 	  return ticket_id
+
+def show_ticket(ticket_id):
+    api_key = "1d3OInmn7R770ovj0ZZI"
+    domain = "infosysanudeep"
+    password = "x"
+
+	# Id of the ticket to be updated
+	#ticket_id = '12'
+    res = requests.get("https://"+ domain +".freshdesk.com/api/v2/tickets/"+ ticket_id +"?include=requester", auth = (api_key, password))
+    return res
+
+def update_ticket(ticket_id,priority):
+	api_key = "1d3OInmn7R770ovj0ZZI"
+	domain = "infosysanudeep"
+	password = "x"
+
+	headers = { 'Content-Type' : 'application/json' }
+
+	ticket = {
+	  'priority' : int(priority),
+	}
+
+	res = requests.put("https://"+ domain +".freshdesk.com/api/v2/tickets/"+ticket_id, auth = (api_key, password), headers = headers, data = json.dumps(ticket))
+	return res
 
 
 @application.route('/dashboard', methods=['POST','GET'])
