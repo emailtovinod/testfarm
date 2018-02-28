@@ -417,7 +417,7 @@ def log_ticket(ticket_type, query, admin_email, priority, status):
 		'type': ticket_type,
 		'priority' : priority,
 		'status' : status,
-            'source' : 7,
+            	'source' : 7,
 	}
 
 	r = requests.post("https://"+ domain +".freshdesk.com/api/v2/tickets", auth = (api_key, password), headers = headers, data = json.dumps(ticket))
