@@ -41,7 +41,7 @@ def login():
 @application.route("/get")
 def get_bot_response():
     global glb_username
-    
+    admin_email= 'admin@example.com'
     """ Fetching user dialog from UI """
     userText = request.args.get('msg')
     
@@ -71,6 +71,8 @@ def get_bot_response():
         
         """ call to QNA forgetting replies from FAQ pages """
         query = str(obj['result']['resolvedQuery'])
+        tkt_priority = 1
+        tkt_status = 4
         resp_from_QNA = QNA(query)
         Deflt_resp = "No good match found in the KB"
         
@@ -86,7 +88,7 @@ def get_bot_response():
         con.commit()
         
         con.close()
-        
+        ticket_id = log_ticket(ticket_type, query, admin_email, tkt_priority, tkt_status)
         reply = str(resp_from_QNA)
         obj = ''
         print('L0 ticket lodged')
@@ -98,6 +100,9 @@ def get_bot_response():
         print(str(obj['result']['parameters']['Vmname']))
         Vmname=str(obj['result']['parameters']['Vmname'])
         action=str(obj['result']['parameters']['action'])
+        tkt_priority = 1
+        tkt_status = 4
+        
         print(Vmname)
         query = action + Vmname
         
@@ -183,8 +188,8 @@ def get_bot_response():
                     print(max_id)
                 con.close()
                 reply = "Ticket: " + str(max_id) + " " + str(reply)
-            
-                reply = Vmname + " is sucessfully " + action + "ed. ticket_id: " + str(max_id) 
+                ticket_id = log_ticket(ticket_type, query, admin_email, tkt_priority, tkt_status)
+                reply = Vmname + " is sucessfully " + action + "ed. ticket_id: " + str(ticket_id) 
                 obj = ''
                 print('L1 ticket lodged')
 
@@ -197,6 +202,8 @@ def get_bot_response():
         vmSize=str(obj['result']['parameters']['vmSize'])
         action='provision'
         #print(obj)
+        tkt_priority = 1
+        tkt_status = 4
         query = 'provision ' + vmSize +" instance in " + Env
         print(query)
         """  Validating if all the required entities for L1 are extracted from user dialogs """ 
@@ -228,7 +235,7 @@ def get_bot_response():
                 ## adding new entry to the entity vmname
                 dialogflow_entity(vmname)
                 SUBSCRIPTION_ID = 'xxxx-xxxx-xxxx-xxxx' 
-                VM_STATUS = 'running'
+                VM_STATUS = 'RUNNING'
                 """  Logging ticket for L1 """ 
                 cur.execute("INSERT INTO TICKETS (NAME,CATEGORY,QUERY, ACTION, VM_SIZE, ENV, vmname) VALUES (?,?,?,?,?,?,?)",(glb_username,ticket_type, query, action, vmSize, Env, vmname) )
                 con.commit()
@@ -243,6 +250,8 @@ def get_bot_response():
                 for row in rows:
                     print(row)
                     ticket_id = row[0]
+                
+                ticket_id = log_ticket(ticket_type, query, admin_email, tkt_priority, tkt_status)
                 
                            
                 con.close()
@@ -262,7 +271,9 @@ def get_bot_response():
         Vmname=str(obj['result']['parameters']['Vmname'])
         user=str(obj['result']['parameters']['user'])
         description=str(obj['result']['parameters']['description'])
-        query = description + Vmname
+        query =  Vmname + ' ' + description
+        tkt_priority = 2
+        tkt_status = 2
        
         """  Validating if all the required entities for L2 are extracted from user dialogs """ 
         if (Vmname != '' and user != '' and description != ''):
@@ -285,7 +296,8 @@ def get_bot_response():
                 print(max_id)
            
             con.close()
-            reply = "Ticket: " + str(max_id) + " " +str(reply)
+            ticket_id = log_ticket(ticket_type, query, admin_email, tkt_priority, tkt_status)
+            reply = "Ticket: " + str(ticket_id) + " " +str(reply)
             obj = ''
             
     return str(reply)
@@ -389,6 +401,40 @@ def dialogflow_entity(vmname):
     print(response)
     print(response.json)
     
+def log_ticket(ticket_type, query, admin_email, priority, status):
+	api_key = "1d3OInmn7R770ovj0ZZI"
+	domain = "infosysanudeep"
+	password = "x"
+	ticket_id = ""
+
+
+	headers = { 'Content-Type' : 'application/json' }
+
+	ticket = {
+		'subject' : ticket_type,
+		'description' : query,
+		'email' : admin_email,
+		'type': ticket_type,
+		'priority' : priority,
+		'status' : status,
+            	'source' : 7,
+	}
+
+	r = requests.post("https://"+ domain +".freshdesk.com/api/v2/tickets", auth = (api_key, password), headers = headers, data = json.dumps(ticket))
+
+	if r.status_code == 201:
+	  print ("Ticket created successfully, the response is given below")
+	  ticket_id = r.json()['id']
+	  print ("Location Header : " + r.headers['Location'])
+	  return ticket_id
+	else:
+	  print ("Failed to create ticket, errors are displayed below,")
+	  response = r.json()
+	  print (response["errors"])
+
+	  print ("x-request-id : " + r.headers['x-request-id'])
+	  print ("Status Code : " + str(r.status_code))
+	  return ticket_id
 
 
 @application.route('/dashboard', methods=['POST','GET'])
