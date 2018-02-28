@@ -129,10 +129,11 @@ def get_bot_response():
             action = action.lower()
             
             print(action)
-            stop_lst= ['stop' , 'shutdown' , 'shut down']   
-            start_lst = ['start', 'run']
+            stop_lst= ['stop' , 'shutdown' , 'shut down']
+            start_lst = ['start' , 'run']
             terminate_list = ['terminate']
-            restart_list = ['restart', 'reboot']
+            
+            restart_list = ['restart' , 'reboot']
 
            
             if (status == ''):
