@@ -132,6 +132,7 @@ def get_bot_response():
             stop_lst= ['stop' , 'shutdown' , 'shut down']   
             start_lst = ['start', 'run']
             terminate_list = ['terminate']
+	    restart_list = ['restart', 'reboot']
 
            
             if (status == ''):
@@ -152,7 +153,7 @@ def get_bot_response():
                 print(reply)
                 obj = ''
 	        
-            elif (((action in  start_lst) or (action in  stop_lst) or (action in  terminate_list))and (status == 'terminated')):
+            elif (((action in  start_lst) or (action in  stop_lst) or (action in  terminate_list) or (action in  restart_list)) and (status == 'terminated')):
                 
                 reply = Vmname + ' is already terminated. No further operations can be performed.'
                 print(reply)
