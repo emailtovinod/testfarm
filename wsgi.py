@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Feb 27 12:41:20 2018
-
-@author: anumula_anudeep
-"""
-
-# -*- coding: utf-8 -*-
 
 from flask import Flask, render_template, request
 import json,apiai, requests
@@ -45,13 +38,7 @@ def get_bot_response():
     priority_lst = {'low': 1 ,'medium': 2 , 'high':3,  'urgent': 4}
     """ Fetching user dialog from UI """
     userText = request.args.get('msg')
-    
-    """ the below connection to dialog flow canbe replaced with Dialogflow_connection()  """ 
-    """ CLIENT_ACCESS_TOKEN = '339d47f35f864a849a6dd17b6e3ede46'
-    ai = apiai.ApiAI(CLIENT_ACCESS_TOKEN)
-    airequest = ai.text_request()
-    airequest.lang = 'de'  # optional, default value equal 'en'
-    airequest.session_id = "<SESSION ID, UNIQUE FOR EACH USER>" """
+
     airequest = Dialogflow_connection() 
     
     airequest.query = userText
@@ -81,14 +68,18 @@ def get_bot_response():
             res = show_ticket(ticket_id)
             if res.status_code == 200:
                 print ("Request processed successfully, the response is given below")
+                priority_map = {1:'low', 2:'medium', 3:'high', 4:'urgent'}
+               
                 L1 = "please find below the ticket details"
-                L2 = " <br /> <b>Ticket id</b>: " + str(res.json()['id'])
-                L3 = " <br /> <b>Requestor email</b>: " + res.json()['requester']['email']
-                L4 = " <br /> <b>Ticket type</b>: " + res.json()['type']
-                L5 = " <br /> <b>ticket id</b>: " + res.json()['description_text']
-                L6 = " <br /> <b>priority</b>: " + str(res.json()['priority'])
+                L2 = " <br /> <b>Ticket Id</b>: " + str(res.json()['id'])
+                L3 = " <br /> <b>Requestor Email</b>: " + res.json()['requester']['email']
+                L4 = " <br /> <b>Ticket Type</b>: " + res.json()['type']
+                L5 = " <br /> <b>ticket Description</b>: " + res.json()['description_text']
+                
+                prioroty_disp = priority_map[res.json()['priority']]
+                L6 = " <br /> <b>priority</b>: " + str(prioroty_disp)
 
-                reply = L1 + L2 + L3 + L4 + L5 + L6
+                reply = L1 + L2 + L6 + L3 + L4 + L5 
 
             else:
                     reply = "Failed to fetch ticket details, please check with a valid ticket id"
@@ -131,7 +122,7 @@ def get_bot_response():
         Deflt_resp = "No good match found in the KB"
         
         if resp_from_QNA.lower() == Deflt_resp.lower() :
-            reply = "Sorry, I am not trained for this"
+            resp_from_QNA = "Sorry, I am not trained for this"
         
         """ Establishing connection with Agentted.db """
         con = create_connection()
@@ -396,18 +387,7 @@ def table_creation():
     conn.execute("INSERT INTO TICKETS (NAME, QUERY,CATEGORY) VALUES (?,?,?)",(name, query,tkt_type) )
     conn.commit()
     conn.execute('CREATE TABLE IF NOT EXISTS VM_INSTANCE (USER_NAME CHAR(100), SUBSCRIPTION_ID CHAR(100), VM_NAME CHAR(100), VM_STATUS CHAR(100))')
-    """
-    cur = conn.cursor()
-    cur.execute("select * from TICKETS")
-    print('TICKETS')
-    names_tickets = list(map(lambda x: x[0], cur.description))
-    print(names_tickets)
-    
-    cur.execute("select * from VM_INSTANCE")
-    print('VM_INSTANCE')
-    names_instances = list(map(lambda x: x[0], cur.description))
-    print(names_instances)
-    """
+
     conn.close()
     print("Tables created")
 
@@ -426,7 +406,6 @@ def QNA(qsn):
         'Content-Type': 'application/json',
         'Ocp-Apim-Subscription-Key': '6b87248960c1422da579715d1ffd818a',
         }
-    #qsn='Does Azure support IPv6?'
     body = "{'question':'" + qsn + "'}"
 
     params = urllib.parse.urlencode({
@@ -523,24 +502,16 @@ def update_ticket(ticket_id,priority):
 def dashboard():
       con = create_connection()
       dataframe = pd.read_sql_query("select * from TICKETS", con)
-      print(dataframe)
-      print(dataframe['CATEGORY'])
-      print(dataframe['CATEGORY'].value_counts())
-#           print(dataframe['CATEGORY'])
-#           sns.distplot(dataframe['CATEGORY'].value_counts())
-      #           plt.bar(dataframe['USER'],dataframe['CATEGORY'])
+#      print(dataframe)
+#      print(dataframe['CATEGORY'])
+#      print(dataframe['CATEGORY'].value_counts())
+
       fig = plt.figure()    
       dataframe.groupby('CATEGORY').size().plot(kind='bar')
       path='static/media/graph.png'
-      
-#      plt.bar(dataframe['CATEGORY'],dataframe['CATEGORY'].value_counts())
-#      plt.xlabel("Ticket Category")
-#      plt.ylabel("Number of Tickets") 
-#      path='static/media/graph.png'
-      print(path)
+   
       fig.savefig(path)
-#           image_to_render = base64.b64encode(path).decode('ascii')
-#           return send_plots(path)
+
       print("path ",path)
       return render_template("dashboard.html",path=path)
           
