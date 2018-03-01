@@ -415,7 +415,7 @@ def table_creation():
 def create_connection():
 
     try:
-        conn = sqlite3.connect('Agent_Ted3.db')
+        conn = sqlite3.connect('Agent_Ted2.db')
         return conn
     except Error as e:
         print(e)
