@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+  <script>
+    window.setInterval(function() {
+    var elem = document.getElementById('chatbox');
+    elem.scrollTop = elem.scrollHeight;
+      }, 1);
+</script>
+  <style>
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: #1d2124; 
+}
+</style>
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="static/loginstyle.css">
+
+  </head>
+  <body style="background-image: url(static/media/login1.png); filter:grayscale(100%)">
+
+  <div>
+  
+    <div id="a" class="chatpagetext" style="width: 30%px; height: 80%; border: 0px solid blue; float: left; align:center">
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+  
+
+
+         <Br><Br><Br> 
+          {% if username %}
+      <p style="padding-left:20px"> <font color=white style="font-size:20px">Welcome : {{ username }}</font></p>
+      {% endif %}
+        <p style="padding-left:20px"> <font color=white style="font-size:30px">Azure Infrastructure Support</font></p>
+    </div>
+     <form action="/dashboard" method="post" class="form-signin">
+                    <button class="btn btn-lg btn-primary" type="submit"  style="font-size:12px">Login for Dashboard View</button>
+                    </form>
+    <div id="b" class="chatpagewin" style="width: 30%; height: 70%; border: 0px solid red; float: right;margin-top:-40px">
+
+        <div class="chatwindow bg-gradient-info" style="margin-top:5px;margin-right:5px;margin-left:5px;margin-bottom:5px;background-color:white;float:right;min-height:660px;">
+          <table><tr>
+          <td>
+            <img style="padding-left:5px;padding-top:5px;" src="/static/media/robo2.png" width="100" height=auto >
+          </td>
+          <td>
+          <h5 id="chattitle" style="padding-left:5px;padding-top:5px;"><font face="Arial" color="blue">Agent</font><b><font face="verdana" color="Orange">TED</font></b></h5>
+          <h7 style="padding-left:2px;padding-top:5px;"><i>Virtual Assistant for Azure Support Services</i></h7>
+          </td>  
+          </tr></table>
+          <div >
+                <div id="chatbox" style="height:500px">
+                  <p class="botText"><span>Hi! I'm AgentTED.</span></p>
+                </div>
+               <br>
+                <div id="userInput">
+                  <input id="textInput" type="text" name="msg" placeholder="Message" class="font-weight-normal" >
+                  <input id="buttonInput" class="btn btn-primary" type="submit" value="Send" >
+                </div>
+                <script>
+                  function getBotResponse() {
+                    var rawText = $("#textInput").val();
+                    var userHtml = '<p class="userText">' + rawText + '</p>';
+                    $("#textInput").val("");
+                    $("#chatbox").append(userHtml);
+                    document.getElementById('userInput').scrollIntoView({block: 'start', behavior: 'smooth'});
+                    $.get("/get", { msg: rawText }).done(function(data) {
+                      var botHtml = '<p class="botText font-weight-normal"><span>' + data + '</span></p>';
+                      $("#chatbox").append(botHtml);
+                      document.getElementById('userInput').scrollIntoView({block: 'start', behavior: 'smooth'});
+                    });
+                  }
+                  $("#textInput").keypress(function(e) {
+                      if(e.which == 13) {
+                          getBotResponse();
+                      }
+                  });
+                  $("#buttonInput").click(function() {
+                    getBotResponse();
+                  })
+                </script>
+          </div>
+        </div>
+
+        </div>
+  </div>
+  </body>
+</html>
