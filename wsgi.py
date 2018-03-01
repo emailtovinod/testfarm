@@ -74,10 +74,10 @@ def get_bot_response():
                 L2 = " <br /> <b>Ticket Id</b>: " + str(res.json()['id'])
                 L3 = " <br /> <b>Requestor Email</b>: " + res.json()['requester']['email']
                 L4 = " <br /> <b>Ticket Type</b>: " + res.json()['type']
-                L5 = " <br /> <b>ticket Description</b>: " + res.json()['description_text']
+                L5 = " <br /> <b>Ticket Description</b>: " + res.json()['description_text']
                 
                 prioroty_disp = priority_map[res.json()['priority']]
-                L6 = " <br /> <b>priority</b>: " + str(prioroty_disp)
+                L6 = " <br /> <b>Priority</b>: " + str(prioroty_disp)
 
                 reply = L1 + L2 + L6 + L3 + L4 + L5 
 
