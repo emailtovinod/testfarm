@@ -2,9 +2,102 @@
       <head>
        <meta name="viewport" content="width=device-width, initial-scale=1.0">
          <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+          <script>
+    window.setInterval(function() {
+    var elem = document.getElementById('scrolltable');
+    elem.scrollTop = elem.scrollHeight;
+      }, 1);
+</script>
+         <style>
+         ::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: #1d2124; 
+}
+         
+ #constrainer {       
+   height: 320px;  
+   background-color:#ffffff;
+   margin-left:50px; 
+   border: 1px solid lightgrey; 
+  
+   border-radius:5px;
+   width:452px;
+   float:left;
+   margin-top:50px;
+   
+}
+.scrolltable {
+    height: 100%; 
+    padding:10px;
+        
+}
+.scrolltable > .body {
+    width: -webkit-fit-content;
+    overflow-y: auto;
+     text-transform: lower;
+    
+}
+.scrolltable {
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+} 
+.scrolltable > .header {
+border-bottom: 1px solid lightgrey; 
+
+ } 
+.scrolltable > .body {    
+    flex: 1;
+    -webkit-flex: 1;
+}
+
+.theader{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  
+  font-size:12px;
+  padding:8px;
+   
+}
+.username{min-width:100px;}
+.vmname{min-width:200px;}
+.vmstatus{min-width:130px;}
+.bargraph{float:left;}
+.vnamespace{padding-left:30px;}
+         </style>
+         
       </head>
       <body>
-    <img src="{{ path }}"  height="420" width="420">
+    <img src="{{ path }}"  height="420" width="420" class="bargraph">
     <p></p>
+    
+    <div id="constrainer">
+    <div class="scrolltable">
+        <table class="header">
+        <thead class="theader">
+        <th class="username">USER_NAME</th>
+        <th class="vmname vnamespace">VM_NAME</th>
+        <th class="vmstatus">VM_STATUS</th>
+        </thead>
+        </table>
+        <div class="body">
+            <table>
+                <tbody>
+           {% for row in rows %}
+            <tr  >
+               <td class="theader username">{{row["USER_NAME"]}}</td>
+               <td class="theader vmname"> {{ row["VM_NAME"]}}</td>
+               <td class="theader vmstatus"> {{ row["VM_STATUS"]}}</td>
+
+            </tr>
+            {% endfor %}
+                
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!--<img src="{{ pathCloud }}"  height="420" width="420" class="bargraph">--->
        </body>
     </html>
