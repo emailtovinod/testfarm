@@ -18,14 +18,28 @@ reply = ''
 @application.route('/', methods=['POST','GET'])
 def login():
     error = None
-    global glb_username
     if request.method == 'POST':
-        glb_username = request.form['username']
-        if request.form['username'] != 'admin' or request.form['password'] != 'admin':
-            error = 'Invalid Credentials. Please try again.'
-        else:
-            return render_template('index.html', error=error)
+        username_form  = request.form['username']
+        password_form  = request.form['password']
+        con = create_connection()
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        cur.execute("SELECT COUNT(USERNAME) FROM LOGIN_CREDENTIALS WHERE USERNAME = ?", (username_form,)) 
+        if cur.fetchone()[0]:
+            cur.execute("SELECT PASSWORD FROM LOGIN_CREDENTIALS WHERE USERNAME = ?", (username_form,))
+            for row in cur.fetchall():
+                if password_form == row[0]:
+                    session['username'] = request.form['username']
+                    User=session.get('username')
+                    return render_template('index.html', username=User)
+                else:
+                    error = 'Invalid Credentials. Please try again.'
     return render_template('login.html', error=error)
+
+@application.route('/logout')
+def logout():
+    session.pop('username', None)
+    render_template('login.html')
 
 #@application.route("/")
 #def home():
@@ -288,6 +302,8 @@ def get_bot_response():
                 con.commit()
             
                 cur.execute("INSERT INTO VM_INSTANCE (USER_NAME, SUBSCRIPTION_ID ,VM_NAME, VM_STATUS) VALUES (?,?,?,?)",(glb_username,SUBSCRIPTION_ID, vmname, VM_STATUS) )
+                cur.execute("INSERT INTO VM_INSTANCE (USER_NAME, SUBSCRIPTION_ID ,VM_NAME, VM_STATUS,VM_SIZE,ENV) VALUES (?,?,?,?,?,?)",(glb_username,SUBSCRIPTION_ID, vmname, VM_STATUS,vmSize,Env) )
+
                 con.commit()
             
                 select_str = "SELECT MAX(TICKET_ID) FROM TICKETS"
@@ -381,12 +397,17 @@ def table_creation():
    
     conn = create_connection()
     conn.execute('CREATE TABLE IF NOT EXISTS TICKETS (TICKET_ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME CHAR(100), CATEGORY CHAR(10), QUERY CHAR(100), VMNAME CHAR(100), ACTION CHAR(100), USER CHAR(100), SHORT_DESC CHAR(100), VM_SIZE CHAR(100), ENV CHAR(100))')
+    conn.execute('CREATE TABLE IF NOT EXISTS LOGIN_CREDENTIALS (USERNAME CHAR(200), PASSWORD CHAR(100), EMAIL CHAR(10))')
     name = 'dummy'
     query = 'testing'
     tkt_type = 'L0'
     conn.execute("INSERT INTO TICKETS (NAME, QUERY,CATEGORY) VALUES (?,?,?)",(name, query,tkt_type) )
     conn.commit()
-    conn.execute('CREATE TABLE IF NOT EXISTS VM_INSTANCE (USER_NAME CHAR(100), SUBSCRIPTION_ID CHAR(100), VM_NAME CHAR(100), VM_STATUS CHAR(100))')
+    conn.execute("INSERT INTO LOGIN_CREDENTIALS (USERNAME, PASSWORD ,EMAIL) VALUES (?,?,?)",('admin', 'password','admin@gmail.com') )
+    conn.execute("INSERT INTO LOGIN_CREDENTIALS (USERNAME, PASSWORD ,EMAIL) VALUES (?,?,?)",('user1', 'password','user1@gmail.com') )
+    conn.execute("INSERT INTO LOGIN_CREDENTIALS (USERNAME, PASSWORD ,EMAIL) VALUES (?,?,?)",('user2', 'password','user2@gmail.com') )
+    conn.commit()
+    conn.execute('CREATE TABLE IF NOT EXISTS VM_INSTANCE (USER_NAME CHAR(100), SUBSCRIPTION_ID CHAR(100), VM_NAME CHAR(100), VM_STATUS CHAR(100), VM_SIZE CHAR(100) , ENV CHAR(100))')
 
     conn.close()
     print("Tables created")
@@ -394,7 +415,7 @@ def table_creation():
 def create_connection():
 
     try:
-        conn = sqlite3.connect('Agent_Ted2.db')
+        conn = sqlite3.connect('Agent_Ted3.db')
         return conn
     except Error as e:
         print(e)
