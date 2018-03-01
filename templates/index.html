@@ -26,6 +26,13 @@
   <div>
   
     <div id="a" class="chatpagetext" style="width: 30%px; height: 80%; border: 0px solid blue; float: left; align:center">
+     <div style="    margin-top: 20px;margin-left: 30px;">
+                   <form action="/dashboard" method="post" class="form-signin">
+                    <button class="btn btn-lg btn-primary" type="submit"  style="font-size:12px">Dashboard View</button>
+                    </form>
+                    <form action="/logout" method="post" class="form-signin" style="margin-left: 220px;margin-top: -40px;">
+                    <button class="btn btn-lg btn-primary" type="submit"  style="font-size:12px">Log Out</button>
+                    </form></div>
       <br>
       <br>
       <br>
@@ -44,12 +51,10 @@
       {% endif %}
         <p style="padding-left:20px"> <font color=white style="font-size:30px">Azure Infrastructure Support</font></p>
     </div>
-     <form action="/dashboard" method="post" class="form-signin">
-                    <button class="btn btn-lg btn-primary" type="submit"  style="font-size:12px">Login for Dashboard View</button>
-                    </form>
+   
     <div id="b" class="chatpagewin" style="width: 30%; height: 70%; border: 0px solid red; float: right;margin-top:-40px">
 
-        <div class="chatwindow bg-gradient-info" style="margin-top:5px;margin-right:5px;margin-left:5px;margin-bottom:5px;background-color:white;float:right;min-height:660px;">
+        <div class="chatwindow bg-gradient-info" style="margin-top:55px;margin-right:5px;margin-left:5px;margin-bottom:5px;background-color:white;float:right;min-height:660px;">
           <table><tr>
           <td>
             <img style="padding-left:5px;padding-top:5px;" src="/static/media/robo2.png" width="100" height=auto >
