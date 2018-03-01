@@ -74,10 +74,10 @@ def get_bot_response():
                 L2 = " <br /> <b>Ticket Id</b>: " + str(res.json()['id'])
                 L3 = " <br /> <b>Requestor Email</b>: " + res.json()['requester']['email']
                 L4 = " <br /> <b>Ticket Type</b>: " + res.json()['type']
-                L5 = " <br /> <b>Ticket Description</b>: " + res.json()['description_text']
+                L5 = " <br /> <b>ticket Description</b>: " + res.json()['description_text']
                 
                 prioroty_disp = priority_map[res.json()['priority']]
-                L6 = " <br /> <b>Priority</b>: " + str(prioroty_disp)
+                L6 = " <br /> <b>priority</b>: " + str(prioroty_disp)
 
                 reply = L1 + L2 + L6 + L3 + L4 + L5 
 
@@ -501,19 +501,43 @@ def update_ticket(ticket_id,priority):
 @application.route('/dashboard', methods=['POST','GET'])
 def dashboard():
       con = create_connection()
+      con.row_factory = sqlite3.Row
+      cur = con.cursor()
+      cur.execute("select * from VM_INSTANCE")
+      rows = cur.fetchall()
+      print(rows)
       dataframe = pd.read_sql_query("select * from TICKETS", con)
-#      print(dataframe)
-#      print(dataframe['CATEGORY'])
-#      print(dataframe['CATEGORY'].value_counts())
+
+      print(dataframe['CATEGORY'])
+      print(dataframe['CATEGORY'].value_counts())
 
       fig = plt.figure()    
       dataframe.groupby('CATEGORY').size().plot(kind='bar')
       path='static/media/graph.png'
-   
+
+      print(path)
       fig.savefig(path)
 
       print("path ",path)
-      return render_template("dashboard.html",path=path)
-          
+      return render_template("dashboard.html",path=path,rows=rows)
+  
+#def dashboard():
+#      con = create_connection()
+#      dataframe = pd.read_sql_query("select * from TICKETS", con)
+##      print(dataframe)
+##      print(dataframe['CATEGORY'])
+##      print(dataframe['CATEGORY'].value_counts())
+#
+#      fig = plt.figure()    
+#      dataframe.groupby('CATEGORY').size().plot(kind='bar')
+#      path='static/media/graph.png'
+#   
+#      fig.savefig(path)
+#
+#      print("path ",path)
+#      return render_template("dashboard.html",path=path)
+#          
+
+
 if __name__ == "__main__":
     main()
