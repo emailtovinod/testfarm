@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session,redirect,url_for
 from sqlite3 import Error
 import json,apiai, requests, datetime, sqlite3
 import http.client, urllib.request, urllib.parse, urllib.error
 import pandas as pd
 import matplotlib.pyplot as plt
+
 
 application = Flask(__name__, template_folder="templates",static_url_path="/static")
 #application.config['DEBUG'] = True
@@ -37,10 +38,10 @@ def login():
                     error = 'Invalid Credentials. Please try again.'
     return render_template('login.html', error=error)
 
-@application.route('/logout')
+@application.route('/logout', methods=['POST','GET'])
 def logout():
     session.pop('username', None)
-    render_template('login.html')
+    return redirect(url_for('login'))
 
 #@application.route("/")
 #def home():
@@ -381,7 +382,7 @@ def tickets():
         
 def main():
     table_creation()
-    application.run()
+    application.run(debug=True)
     #application.run(host='0.0.0.0', port=5151)
 
 def Dialogflow_connection():
