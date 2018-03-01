@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, render_template, request
-import json,apiai, requests
-import sqlite3
+from flask import Flask, render_template, request, session
 from sqlite3 import Error
+import json,apiai, requests, datetime, sqlite3
 import http.client, urllib.request, urllib.parse, urllib.error
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,8 +10,8 @@ import matplotlib.pyplot as plt
 application = Flask(__name__, template_folder="templates",static_url_path="/static")
 #application.config['DEBUG'] = True
 
-glb_username = ''
 reply = ''
+application.secret_key = '12345'
   
 
 @application.route('/', methods=['POST','GET'])
@@ -26,11 +25,13 @@ def login():
         cur = con.cursor()
         cur.execute("SELECT COUNT(USERNAME) FROM LOGIN_CREDENTIALS WHERE USERNAME = ?", (username_form,)) 
         if cur.fetchone()[0]:
-            cur.execute("SELECT PASSWORD FROM LOGIN_CREDENTIALS WHERE USERNAME = ?", (username_form,))
+            cur.execute("SELECT PASSWORD, EMAIL FROM LOGIN_CREDENTIALS WHERE USERNAME = ?", (username_form,))
             for row in cur.fetchall():
                 if password_form == row[0]:
                     session['username'] = request.form['username']
-                    User=session.get('username')
+                    session['email'] = row[1]
+                    User = session.get('username')
+                    #email = session.get('email')
                     return render_template('index.html', username=User)
                 else:
                     error = 'Invalid Credentials. Please try again.'
@@ -47,8 +48,8 @@ def logout():
 
 @application.route("/get")
 def get_bot_response():
-    global glb_username
-    admin_email= 'admin@example.com'
+    username = session.get('username')
+    user_email= session.get('email')
     priority_lst = {'low': 1 ,'medium': 2 , 'high':3,  'urgent': 4}
     """ Fetching user dialog from UI """
     userText = request.args.get('msg')
@@ -88,10 +89,10 @@ def get_bot_response():
                 L2 = " <br /> <b>Ticket Id</b>: " + str(res.json()['id'])
                 L3 = " <br /> <b>Requestor Email</b>: " + res.json()['requester']['email']
                 L4 = " <br /> <b>Ticket Type</b>: " + res.json()['type']
-                L5 = " <br /> <b>ticket Description</b>: " + res.json()['description_text']
+                L5 = " <br /> <b>Ticket Description</b>: " + res.json()['description_text']
                 
                 prioroty_disp = priority_map[res.json()['priority']]
-                L6 = " <br /> <b>priority</b>: " + str(prioroty_disp)
+                L6 = " <br /> <b>Priority</b>: " + str(prioroty_disp)
 
                 reply = L1 + L2 + L6 + L3 + L4 + L5 
 
@@ -134,7 +135,7 @@ def get_bot_response():
         tkt_status = 4
         resp_from_QNA = QNA(query)
         Deflt_resp = "No good match found in the KB"
-        
+                
         if resp_from_QNA.lower() == Deflt_resp.lower() :
             resp_from_QNA = "Sorry, I am not trained for this"
         
@@ -143,11 +144,11 @@ def get_bot_response():
         cur = con.cursor()
         
         """ Logging ticket for L0 """
-        cur.execute("INSERT INTO TICKETS (NAME, CATEGORY,QUERY) VALUES (?,?,?)",(glb_username,ticket_type,query) )
+        cur.execute("INSERT INTO TICKETS (NAME, CATEGORY,QUERY) VALUES (?,?,?)",(username,ticket_type,query) )
         con.commit()
         
         con.close()
-        ticket_id = log_ticket(ticket_type, query, admin_email, tkt_priority, tkt_status)
+        ticket_id = log_ticket(ticket_type, query, user_email, tkt_priority, tkt_status)
         reply = str(resp_from_QNA)
         obj = ''
         print('L0 ticket lodged')
@@ -237,7 +238,7 @@ def get_bot_response():
                 
             
                 """  Logging ticket for L1 """ 
-                cur.execute("INSERT INTO TICKETS (NAME,CATEGORY,QUERY, VMNAME, ACTION ) VALUES (?,?,?,?,?)",(glb_username,ticket_type, query, Vmname, action) )
+                cur.execute("INSERT INTO TICKETS (NAME,CATEGORY,QUERY, VMNAME, ACTION ) VALUES (?,?,?,?,?)",(username,ticket_type, query, Vmname, action) )
                 con.commit()
                 
                 select_str = "SELECT MAX(TICKET_ID) FROM TICKETS"
@@ -249,7 +250,7 @@ def get_bot_response():
                     print(max_id)
                 con.close()
                 reply = "Ticket: " + str(max_id) + " " + str(reply)
-                ticket_id = log_ticket(ticket_type, query, admin_email, tkt_priority, tkt_status)
+                ticket_id = log_ticket(ticket_type, query, user_email, tkt_priority, tkt_status)
                 reply = Vmname + " is sucessfully " + action + "ed. ticket_id: " + str(ticket_id) 
                 obj = ''
                 print('L1 ticket lodged')
@@ -298,11 +299,10 @@ def get_bot_response():
                 SUBSCRIPTION_ID = 'xxxx-xxxx-xxxx-xxxx' 
                 VM_STATUS = 'RUNNING'
                 """  Logging ticket for L1 """ 
-                cur.execute("INSERT INTO TICKETS (NAME,CATEGORY,QUERY, ACTION, VM_SIZE, ENV, vmname) VALUES (?,?,?,?,?,?,?)",(glb_username,ticket_type, query, action, vmSize, Env, vmname) )
+                cur.execute("INSERT INTO TICKETS (NAME,CATEGORY,QUERY, ACTION, VM_SIZE, ENV, vmname) VALUES (?,?,?,?,?,?,?)",(username, ticket_type, query, action, vmSize, Env, vmname) )
                 con.commit()
-            
-                cur.execute("INSERT INTO VM_INSTANCE (USER_NAME, SUBSCRIPTION_ID ,VM_NAME, VM_STATUS) VALUES (?,?,?,?)",(glb_username,SUBSCRIPTION_ID, vmname, VM_STATUS) )
-                cur.execute("INSERT INTO VM_INSTANCE (USER_NAME, SUBSCRIPTION_ID ,VM_NAME, VM_STATUS,VM_SIZE,ENV) VALUES (?,?,?,?,?,?)",(glb_username,SUBSCRIPTION_ID, vmname, VM_STATUS,vmSize,Env) )
+                time_stamp = str(datetime.datetime.utcnow())
+                cur.execute("INSERT INTO VM_INSTANCE (USER_NAME, SUBSCRIPTION_ID , VM_NAME, VM_STATUS, VM_SIZE, ENV, LAUNCH_DATE) VALUES (?,?,?,?,?,?,?)",(username, SUBSCRIPTION_ID, vmname, VM_STATUS, vmSize, Env, time_stamp) )
 
                 con.commit()
             
@@ -314,7 +314,7 @@ def get_bot_response():
                     print(row)
                     ticket_id = row[0]
                 
-                ticket_id = log_ticket(ticket_type, query, admin_email, tkt_priority, tkt_status)
+                ticket_id = log_ticket(ticket_type, query, user_email, tkt_priority, tkt_status)
                 
                            
                 con.close()
@@ -348,7 +348,7 @@ def get_bot_response():
             cur = con.cursor()
             
             """  Logging ticket for L2 """ 
-            cur.execute("INSERT INTO TICKETS (NAME, CATEGORY, QUERY, VMNAME, USER, SHORT_DESC) VALUES (?,?,?,?,?,?)",(glb_username, ticket_type, query, Vmname, user, description) )
+            cur.execute("INSERT INTO TICKETS (NAME, CATEGORY, QUERY, VMNAME, USER, SHORT_DESC) VALUES (?,?,?,?,?,?)",(username, ticket_type, query, Vmname, user, description) )
             con.commit()
             
             """  Fetching the ticket id of the previous logged ticket """ 
@@ -362,7 +362,7 @@ def get_bot_response():
            
             con.close()
             tkt_priority = priority_lst[tkt_priority.lower()]
-            ticket_id = log_ticket(ticket_type, query, admin_email, tkt_priority, tkt_status)
+            ticket_id = log_ticket(ticket_type, query, user_email, tkt_priority, tkt_status)
             reply = "Ticket: " + str(ticket_id) + " " +str(reply)
             obj = ''
             
@@ -403,11 +403,11 @@ def table_creation():
     tkt_type = 'L0'
     conn.execute("INSERT INTO TICKETS (NAME, QUERY,CATEGORY) VALUES (?,?,?)",(name, query,tkt_type) )
     conn.commit()
-    conn.execute("INSERT INTO LOGIN_CREDENTIALS (USERNAME, PASSWORD ,EMAIL) VALUES (?,?,?)",('admin', 'password','admin@gmail.com') )
-    conn.execute("INSERT INTO LOGIN_CREDENTIALS (USERNAME, PASSWORD ,EMAIL) VALUES (?,?,?)",('user1', 'password','user1@gmail.com') )
-    conn.execute("INSERT INTO LOGIN_CREDENTIALS (USERNAME, PASSWORD ,EMAIL) VALUES (?,?,?)",('user2', 'password','user2@gmail.com') )
+    conn.execute("INSERT INTO LOGIN_CREDENTIALS (USERNAME, PASSWORD ,EMAIL) VALUES (?,?,?)",('admin', 'admin','admin@gmail.com') )
+    conn.execute("INSERT INTO LOGIN_CREDENTIALS (USERNAME, PASSWORD ,EMAIL) VALUES (?,?,?)",('user1', 'ted@123','user1@gmail.com') )
+    conn.execute("INSERT INTO LOGIN_CREDENTIALS (USERNAME, PASSWORD ,EMAIL) VALUES (?,?,?)",('user2', 'ted@123','user2@gmail.com') )
     conn.commit()
-    conn.execute('CREATE TABLE IF NOT EXISTS VM_INSTANCE (USER_NAME CHAR(100), SUBSCRIPTION_ID CHAR(100), VM_NAME CHAR(100), VM_STATUS CHAR(100), VM_SIZE CHAR(100) , ENV CHAR(100))')
+    conn.execute('CREATE TABLE IF NOT EXISTS VM_INSTANCE (USER_NAME CHAR(100), SUBSCRIPTION_ID CHAR(100), VM_NAME CHAR(100), VM_STATUS CHAR(100), VM_SIZE CHAR(100) , ENV CHAR(100), LAUNCH_DATE CHAR(100))')
 
     conn.close()
     print("Tables created")
@@ -459,7 +459,7 @@ def dialogflow_entity(vmname):
     print(response)
     print(response.json)
     
-def log_ticket(ticket_type, query, admin_email, priority, status):
+def log_ticket(ticket_type, query, user_email, priority, status):
 	api_key = "1d3OInmn7R770ovj0ZZI"
 	domain = "infosysanudeep"
 	password = "x"
@@ -471,11 +471,11 @@ def log_ticket(ticket_type, query, admin_email, priority, status):
 	ticket = {
 		'subject' : ticket_type,
 		'description' : query,
-		'email' : admin_email,
+		'email' : user_email,
 		'type': ticket_type,
 		'priority' : priority,
 		'status' : status,
-            	'source' : 7,
+        'source' : 7,
 	}
 
 	r = requests.post("https://"+ domain +".freshdesk.com/api/v2/tickets", auth = (api_key, password), headers = headers, data = json.dumps(ticket))
