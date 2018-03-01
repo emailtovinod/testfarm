@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
+  <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
   <script>
     window.setInterval(function() {
     var elem = document.getElementById('chatbox');
     elem.scrollTop = elem.scrollHeight;
-      }, 1)
+      }, 1);
 </script>
   <style>
 ::-webkit-scrollbar {
@@ -17,7 +18,6 @@
 </style>
     <link rel="stylesheet" type="text/css" href="/static/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
     <link rel="stylesheet" href="static/loginstyle.css">
 
   </head>
@@ -25,15 +25,27 @@
 
   <div>
   
-    <div id="a" class="chatpagetext" style="width: 50%px; height: 100%; border: 0px solid blue; float: left; align:center">
-      <br><Br><br><br><br><br><br><br>
-      <Br>
+    <div id="a" class="chatpagetext" style="width: 30%px; height: 80%; border: 0px solid blue; float: left; align:center">
       <br>
       <br>
       <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+  
+
+
+         <Br><Br><Br> 
+     
         <p style="padding-left:20px"> <font color=white style="font-size:30px">Azure Infrastructure Support</font></p>
     </div>
-    <div id="b" class="chatpagewin" style="width: 50%; height: 100%; border: 0px solid red; float: right;">
+     <form action="/dashboard" method="post" class="form-signin">
+                    <button class="btn btn-lg btn-primary" type="submit"  style="font-size:12px">Login for Dashboard View</button>
+                    </form>
+    <div id="b" class="chatpagewin" style="width: 30%; height: 70%; border: 0px solid red; float: right;margin-top:-40px">
 
         <div class="chatwindow bg-gradient-info" style="margin-top:5px;margin-right:5px;margin-left:5px;margin-bottom:5px;background-color:white;float:right;min-height:660px;">
           <table><tr>
