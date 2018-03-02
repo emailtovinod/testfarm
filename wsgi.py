@@ -33,7 +33,7 @@ VNET_NAME = 'AgentTED-VirtualNetwork'
 SUBNET_NAME = 'AgentTED-SubNet1'
 
 # VM
-VM_NAME = 'VM-WIN-TED-123'
+#VM_NAME = 'VM-WIN-TED-123'
 
 reply = ''
 application.secret_key = '12345'
