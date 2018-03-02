@@ -6,3 +6,4 @@ apiai
 matplotlib
 pandas
 requests
+azure
