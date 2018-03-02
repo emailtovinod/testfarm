@@ -33,7 +33,7 @@ VNET_NAME = 'AgentTED-VirtualNetwork'
 SUBNET_NAME = 'AgentTED-SubNet1'
 
 # VM
-#VM_NAME = 'VM-WIN-TED-123'
+VM_NAME = 'VM-WIN-TED-123'
 
 reply = ''
 application.secret_key = '12345'
@@ -698,7 +698,7 @@ def stop_vm(VM_NAME):
 
 def list_vm():
 
- credentials, subscription_id = get_credentials()
+    credentials, subscription_id = get_credentials()
     resource_client = ResourceManagementClient(credentials, subscription_id)
     compute_client = ComputeManagementClient(credentials, subscription_id)
 #    network_client = NetworkManagementClient(credentials, subscription_id)
