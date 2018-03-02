@@ -6,10 +6,34 @@ import json,apiai, requests, datetime, sqlite3
 import http.client, urllib.request, urllib.parse, urllib.error
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
+import traceback
+from azure.common.credentials import ServicePrincipalCredentials
+from azure.mgmt.resource import ResourceManagementClient
+from azure.mgmt.network import NetworkManagementClient
+from azure.mgmt.compute import ComputeManagementClient
+from azure.mgmt.compute.models import DiskCreateOption
+from msrestazure.azure_exceptions import CloudError
+from haikunator import Haikunator
+import time
+haikunator = Haikunator()
 
 
 application = Flask(__name__, template_folder="templates",static_url_path="/static")
 #application.config['DEBUG'] = True
+
+# Azure Datacenter
+LOCATION = 'eastus'
+
+# Resource Group
+GROUP_NAME = 'AgentTED-ResourceGroup'
+
+# Network
+VNET_NAME = 'AgentTED-VirtualNetwork'
+SUBNET_NAME = 'AgentTED-SubNet1'
+
+# VM
+VM_NAME = 'VM-WIN-TED-123'
 
 reply = ''
 application.secret_key = '12345'
@@ -68,6 +92,7 @@ def get_bot_response():
     reply = obj['result']['fulfillment']['speech']
     ticket_type=str(obj['result']['action'])
     action = ticket_type
+    azure_subscription='yes'
     print(action)
     print(str(obj['result']['parameters']))
     
@@ -221,14 +246,50 @@ def get_bot_response():
                 print(reply)
                 obj = ''
             else:
-                status_updt = 'RUNNING'
+#                status_updt = 'RUNNING'
                 if (action in  start_lst ) : 
-                    status_updt = 'RUNNING'
-                
-                if (action in  stop_lst ) : 
-                    status_updt = 'STOPPED'
-                
-                if (action in  terminate_list ) : 
+                    if (azure_subscription=='yes'):
+                        exit_code=start_vm(Vmname)
+                        time.sleep(15)
+                        if (exit_code=='Succeeded'):
+                            status_updt = 'RUNNING'
+                        else:
+                            status_updt = 'FAILED TO START'
+                    elif (azure_subscription=='no'):
+                          status_updt = 'RUNNING'
+                        
+                               
+                if (action in  stop_lst ) :
+                    
+                    if (azure_subscription=='yes'):
+                        exit_code=stop_vm(Vmname)
+                        time.sleep(15)
+                        if (exit_code=='Succeeded'):
+                            status_updt = 'STOPPED'
+                        else:
+                            status_updt = 'FAILED TO STOP'
+                    elif (azure_subscription=='no'):
+                          status_updt = 'STOPPED'
+
+                    if (action in  restart_list ) :
+                    
+                        if (azure_subscription=='yes'):
+                        
+                            exit_code=restart_vm(Vmname)
+                        
+                            time.sleep(15)
+                        
+                        if (exit_code=='Succeeded'):
+                            status_updt = 'RESTARTED'
+                            
+                        else:
+                            status_updt = 'FAILED TO RESTART'
+                    elif (azure_subscription=='no'):
+                        
+                          status_updt = 'RESTARTED'
+                          
+                if (action in  terminate_list ) :
+                    
                     status_updt = 'TERMINATED'
                     
                 update_str = "update VM_INSTANCE set VM_STATUS = '" + status_updt + "' where  VM_NAME = '" + Vmname + "'"  
@@ -525,7 +586,8 @@ def dashboard():
       con = create_connection()
       con.row_factory = sqlite3.Row
       cur = con.cursor()
-      cur.execute("select * from VM_INSTANCE")
+      username = session.get('username')
+      cur.execute("select * from VM_INSTANCE WHERE USER_NAME=?",(username,))
       rows = cur.fetchall()
       print(rows)
       dataframe = pd.read_sql_query("select * from TICKETS", con)
@@ -559,6 +621,94 @@ def dashboard():
 #      print("path ",path)
 #      return render_template("dashboard.html",path=path)
 #          
+
+def get_credentials():
+   
+    subscription_id = "1e9db46c-8d0b-48b9-af0d-568bfe41f139"
+    credentials = ServicePrincipalCredentials(
+        client_id = "1ba3737e-b8f9-4ad4-9770-51fdb0ce5637",
+        secret = "1zHH/NzNybuzfk6K1yR4IdEjZUo/rrw3MeNR1nfxYmk=",
+        tenant = "73ffdfaa-cac5-4972-9af1-573cfbf91a00"
+    
+    )
+    return credentials, subscription_id
+
+
+def start_vm(VM_NAME):
+
+    credentials, subscription_id = get_credentials()
+#    resource_client = ResourceManagementClient(credentials, subscription_id)
+    compute_client = ComputeManagementClient(credentials, subscription_id)
+#    network_client = NetworkManagementClient(credentials, subscription_id)
+      
+    # Get the virtual machine by name
+    print('\nGet Virtual Machine by Name')
+    virtual_machine = compute_client.virtual_machines.get(
+        GROUP_NAME,
+        VM_NAME
+    )
+     
+    # Start the VM
+    print('\nStart VM')
+    async_vm_start = compute_client.virtual_machines.start(GROUP_NAME, VM_NAME)
+    async_vm_start.wait()
+    return async_vm_start.status()
+
+
+def restart_vm(VM_NAME):
+
+    credentials, subscription_id = get_credentials()
+#    resource_client = ResourceManagementClient(credentials, subscription_id)
+    compute_client = ComputeManagementClient(credentials, subscription_id)
+#    network_client = NetworkManagementClient(credentials, subscription_id)
+
+
+    print('\nGet Virtual Machine by Name')
+    virtual_machine = compute_client.virtual_machines.get(
+        GROUP_NAME,
+        VM_NAME
+    )
+    
+    # Restart the VM
+    print('\nRestart VM')
+    async_vm_restart = compute_client.virtual_machines.restart(GROUP_NAME, VM_NAME)
+    async_vm_restart.wait()
+    return async_vm_restart.status()
+
+
+def stop_vm(VM_NAME):
+
+    credentials, subscription_id = get_credentials()
+#    resource_client = ResourceManagementClient(credentials, subscription_id)
+    compute_client = ComputeManagementClient(credentials, subscription_id)
+#    network_client = NetworkManagementClient(credentials, subscription_id)
+
+    print('\nGet Virtual Machine by Name')
+    virtual_machine = compute_client.virtual_machines.get(
+        GROUP_NAME,
+        VM_NAME
+    )
+
+    # Stop the VM
+    print('\nStop VM')
+    async_vm_stop = compute_client.virtual_machines.power_off(GROUP_NAME, VM_NAME)
+    async_vm_stop.wait()
+    return async_vm_stop.status()
+
+
+def list_vm():
+
+ credentials, subscription_id = get_credentials()
+    resource_client = ResourceManagementClient(credentials, subscription_id)
+    compute_client = ComputeManagementClient(credentials, subscription_id)
+#    network_client = NetworkManagementClient(credentials, subscription_id)
+
+    # List VM in resource group
+    print('\nList VMs in resource group')
+    for vm in compute_client.virtual_machines.list(GROUP_NAME):
+        print("\tVM: {}".format(vm.name))
+
+      
 
 
 if __name__ == "__main__":
