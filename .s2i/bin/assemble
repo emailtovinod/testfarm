@@ -27,7 +27,6 @@ set -e
 shopt -s dotglob
 echo "---> Upgrading PiP..."
 pip install --upgrade pip
-sudo yum install -y python-tkinter
 echo "---> Installing application source ..."
 mv /tmp/src/* ./
 
