@@ -79,8 +79,8 @@ if should_collectstatic; then
 fi
 
 #set backend for matplotlib
-RUN mkdir -p /opt/app-root/src/.config/matplotlib
-RUN echo "backend : Agg" > /opt/app-root/src/.config/matplotlib/matplotlibrc
+mkdir -p /opt/app-root/src/.config/matplotlib
+echo "backend : Agg" > /opt/app-root/src/.config/matplotlib/matplotlibrc
 
 # set permissions for any installed artifacts
 fix-permissions /opt/app-root
