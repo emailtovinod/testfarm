@@ -1,6 +1,5 @@
 # Used by pip to install required python packages
 # Usage: pip install -r requirements.txt
-#pip install --upgrade pip
 azure
 gunicorn
 flask 
@@ -8,3 +7,4 @@ apiai
 matplotlib
 pandas
 requests
+haikunator
