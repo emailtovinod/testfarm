@@ -25,7 +25,7 @@ function install_pipenv() {
 set -e
 
 shopt -s dotglob
-echo "---> Upgrading PiP..."
+echo "---> Upgrading pip..."
 pip install --upgrade pip
 echo "---> Installing application source ..."
 mv /tmp/src/* ./
